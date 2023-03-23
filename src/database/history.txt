@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model UserModel {
+  id       Int       @id @default(autoincrement())
+  email    String
+  login    String
+  password String
+  order    Order[]
+  Comment  Comment[]
+}
+
+model Product {
+  id                  Int         @id @default(autoincrement())
+  firstLevelCategory  String
+  secondLevelCategory String
+  brand               Brand       @relation(fields: [brandId], references: [id])
+  modelDevice         ModelDevice @relation(fields: [modelDeviceId], references: [id])
+  name                String
+  price               Int
+  oldPrice            Int?
+  tags                Tag[]       @relation("TagToPost")
+  brandId             Int
+  modelDeviceId       Int
+  Comment             Comment[]
+  Order               Order[]
+}
+
+model Order {
+  id        Int        @id @default(autoincrement())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  delivered Boolean    @default(false)
+  author    UserModel? @relation(fields: [authorId], references: [id])
+  product   Product    @relation(fields: [productId], references: [id])
+  productId Int
+  authorId  Int?
+}
+
+model Brand {
+  id      Int       @id @default(autoincrement())
+  name    String
+  Product Product[]
+}
+
+model ModelDevice {
+  id      Int       @id @default(autoincrement())
+  name    String
+  Product Product[]
+}
+
+model Rating {
+  id        Int @id @default(autoincrement())
+  UserId    Int
+  ProductId Int
+}
+
+model Comment {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  comment     String
+  writtenById Int
+  productId   Int
+  writtenBy   UserModel @relation(fields: [writtenById], references: [id])
+  Product     Product   @relation(fields: [productId], references: [id], onUpdate: NoAction)
+}
+
+
+
+model Tag {
+  id      Int       @id @default(autoincrement())
+  tag     String    @unique
+  ProductId Int[]
+  Product   Product   @relation(fields: [productId], references: [id], onUpdate: NoAction)
+}
