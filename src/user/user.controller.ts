@@ -29,7 +29,6 @@ export class UserController extends BaseController implements IUserController {
 		@inject(TYPES.UserService) private userService: UserService,
 		@inject(TYPES.ConfigService) private configService: IConfigService,
 		@inject(TYPES.FileService) private fileService: FileService,
-		@inject(TYPES.MailService) private emailService: MailService,
 	) {
 		super(loggerService);
 		this.bindRoutes([
@@ -111,32 +110,10 @@ export class UserController extends BaseController implements IUserController {
 			next(new HTTPError(422, 'Ошибка создания пользователя '));
 		} else {
 			this.ok(res, { email: result?.email, id: result?.id });
-			await this.emailService.sendActivateEmail(result?.email, result.id);
 		}
 	}
-	async verifyEmail(request: Request, res: Response, next: NextFunction) {
-		const getInfoProfile = await this.userService.verifyEmail(request.params['id'].slice(1));
-		this.ok(res, { ...getInfoProfile });
-	}
-	async loginByGoogle(
-		{ body }: Request<{}, {}, { CLIENT_ID: string; token: string }>,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> {
-		const client = new OAuth2Client(body.CLIENT_ID);
-
-		const ticket = await client.verifyIdToken({
-			idToken: body.token,
-			audience: body.CLIENT_ID,
-		});
-		const payload = ticket.getPayload();
-		if (!payload) {
-			return next(new HTTPError(401, 'ошибка авторизации', 'login'));
-		}
-		const email = payload['email'];
-		const jwt = await this.jwtSign(email ?? '', this.configService.get('SECRET'));
-		this.ok(res, { jwt });
-	}
+	
+	
 	async login(
 		{ body }: Request<{}, {}, UserLoginDto>,
 		res: Response,
@@ -147,10 +124,6 @@ export class UserController extends BaseController implements IUserController {
 			return next(new HTTPError(401, 'ошибка авторизации', 'login'));
 		}
 		const userModel = (await this.userService.getUserInfo(body.email)) as UserModel;
-		if (!userModel.isActive) {
-			await this.emailService.sendActivateEmail(userModel.email, userModel.id);
-			return next(new HTTPError(401, 'подтвердите почту', 'login'));
-		}
 		const jwt = await this.jwtSign(body.email, this.configService.get('SECRET'));
 		this.ok(res, { jwt });
 	}
@@ -191,32 +164,6 @@ export class UserController extends BaseController implements IUserController {
 				},
 			);
 		});
-	}
-	public async editAddress(
-		request: Request<{}, {}, UserAdressDto>,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> {
-		const userId = await this.userService.getUserInfo(request.user);
-		if (!userId) {
-			return next(new HTTPError(401, 'Файл должен быть фотографией'));
-		}
-		request.body.userId = userId.id;
-		const address = await this.userService.editAddress(request.body);
-		this.ok(res, { address });
-	}
-	public async createAddress(
-		request: Request<{}, {}, UserAdressDto>,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> {
-		const userId = await this.userService.getUserInfo(request.user);
-		if (!userId) {
-			return next(new HTTPError(401, 'Файл должен быть фотографией'));
-		}
-		request.body.userId = userId.id;
-		const address = await this.userService.createAddress(request.body);
-		this.ok(res, { address });
 	}
 	public async updateAvatar(request: Request, res: Response, next: NextFunction): Promise<void> {
 		const writtenById = await this.userService.getUserInfo(request.user);

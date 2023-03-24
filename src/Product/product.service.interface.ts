@@ -10,24 +10,23 @@ import {
 	Brand,
 	FirstLevelCategory,
 	ModelDevice,
-	Product,
 	SecondLevelCategory,
-	Comment, Tag,
+	Comment,
 } from '@prisma/client';
 import { FileElementResponse } from '../files/dto/fileElement.response';
 import { MFile } from '../files/mfile.class';
 
 export interface IProductService {
-	create: (product: ProductCreate) => Promise<Product | null>;
+	create: (product: ProductCreate) => Promise<ModelDevice | null>;
 	createModel: (model: ModelDeviceDto) => Promise<ModelDevice | null>;
 	createBrand: (brand: BrandDevice) => Promise<Brand | null>;
-	findLikeSqlModelBrand: (searchByWorld: string) => Promise<Product[] | null>;
+	findLikeSqlModelBrand: (searchByWorld: string) => Promise<ModelDevice[] | null>;
 
-	find: (name: string) => Promise<Product | null>;
-	findByAlias: (alias: string) => Promise<Product | null>;
-	getById: (id: string) => Promise<Product | null>;
-	delete: (id: string) => Promise<Product | null>;
-	update: (product: ProductUpdate) => Promise<Product | null>;
+	find: (name: string) => Promise<ModelDevice | null>;
+	findByAlias: (alias: string) => Promise<ModelDevice | null>;
+	getById: (id: string) => Promise<ModelDevice | null>;
+	delete: (id: string) => Promise<ModelDevice | null>;
+	update: (product: ProductUpdate) => Promise<ModelDevice | null>;
 	getAll: () => Promise<(ModelDevice & { brand: Brand; Comment: Comment[] })[]>;
 	getModelBrandId: (product: ProductCreate) => Promise<{
 		brandId: string | undefined;
@@ -45,15 +44,15 @@ export interface IProductService {
 		firstLevelId: string,
 		alias: string,
 	) => Promise<SecondLevelCategory | null>;
-	findProducts: (brandId: string) => Promise<Product[] | null>;
+	findProducts: (brandId: string) => Promise<ModelDevice[] | null>;
 	getCategory: () => Promise<FirstLevelCategory[] | null>;
 	getBrands: () => Promise<Brand[]>;
 	getProductByBrandSecondCategory: (
 		secondLevelId: string,
 		brandId: string,
 	) => Promise<ModelDevice[] | null>;
-	saveFile: (files: MFile[], productId: string) => Promise<Product | null>;
+	saveFile: (files: MFile[], productId: string) => Promise<ModelDevice | null>;
 	getBrandProductByCategory: (secondLevelId: string) => Promise<Brand[]>;
-	getProductsDiscount: () => Promise<Product[]>;
+	getProductsDiscount: () => Promise<ModelDevice[]>;
 	getTags: () => Promise<Tag[]>;
 }

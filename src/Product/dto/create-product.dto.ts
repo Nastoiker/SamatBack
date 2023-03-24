@@ -7,10 +7,10 @@ export class ProductModel {
 	@IsString()
 	alias: string;
 	@IsString()
-	TagId: string;
-	@IsString()
 	@IsOptional()
 	color?: string;
+  @IsString()
+  Description: string;
 	@IsString()
 	@IsOptional()
 	ColorAlias?: string;
@@ -19,8 +19,15 @@ export class ProductModel {
 	image?: string;
 	@IsNumber()
 	quantity: number;
+  @IsString()
+	secondCategoryId: string;
+  @IsArray()
+  favorite: Favorite[];
+  @IsArray()
+  comment: Comment[];
 	@IsString()
 	modelDeviceId: string;
+  
 }
 export class Favorite {
 	@IsString()

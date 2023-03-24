@@ -27,14 +27,9 @@ import { FileService } from './files/file.service';
 import { AdminService } from './adminAbility/admin.service';
 import { AdminRepository } from './adminAbility/admin.repository';
 import { AdminController } from './adminAbility/admin.controller';
-import { MailService } from './Mail/Mail.service';
-import { CryptomusService } from './cryptomus/cryptomus.service';
 import { CronService } from './cront/cron.service';
 import { CronRepository } from './cront/cron.repository';
-import { BuyingService } from './buyProduct/buying.service';
-import { buying } from './buyProduct/buying.controller';
-import { MailController } from './Mail/Mail.controller';
-import { MailRepository } from './Mail/Mail.repository';
+
 
 const appContainerBinding = new ContainerModule((bind: interfaces.Bind) => {
 	bind<Ilogger>(TYPES.LoggerService).to(LoggerService).inSingletonScope();
@@ -46,7 +41,6 @@ const appContainerBinding = new ContainerModule((bind: interfaces.Bind) => {
 	bind<IUserRepository>(TYPES.UserRepository).to(UserRepository).inSingletonScope();
 	bind<IProductRepository>(TYPES.ProductRepository).to(ProductRepository).inSingletonScope();
 	bind<IProductController>(TYPES.ProductController).to(ProductController).inSingletonScope();
-	bind<IProductService>(TYPES.ProductService).to(ProductService).inSingletonScope();
 	bind<userAbility>(TYPES.userAbility).to(userAbility).inSingletonScope();
 	bind<UserAbilityService>(TYPES.UserAbilityService).to(UserAbilityService).inSingletonScope();
 	bind<UserAbilityRepository>(TYPES.UserAbilityRepository)
@@ -56,14 +50,8 @@ const appContainerBinding = new ContainerModule((bind: interfaces.Bind) => {
 	bind<AdminService>(TYPES.AdminService).to(AdminService).inSingletonScope();
 	bind<AdminRepository>(TYPES.AdminRepository).to(AdminRepository).inSingletonScope();
 	bind<AdminController>(TYPES.AdminController).to(AdminController).inSingletonScope();
-	bind<MailService>(TYPES.MailService).to(MailService).inSingletonScope();
-	bind<MailController>(TYPES.MailController).to(MailController).inSingletonScope();
-	bind<CryptomusService>(TYPES.CryptomusService).to(CryptomusService).inSingletonScope();
 	bind<CronService>(TYPES.CronService).to(CronService).inSingletonScope();
 	bind<CronRepository>(TYPES.CronRepository).to(CronRepository).inSingletonScope();
-	bind<buying>(TYPES.BuyProductController).to(buying).inSingletonScope();
-	bind<BuyingService>(TYPES.BuyingService).to(BuyingService).inSingletonScope();
-	bind<MailRepository>(TYPES.MailRepository).to(MailRepository).inSingletonScope();
 	bind<App>(TYPES.Application).to(App).inSingletonScope();
 });
 

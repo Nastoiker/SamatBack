@@ -6,12 +6,11 @@ import 'reflect-metadata';
 import { IConfigService } from '../config/config.service.interface';
 import { TYPES } from '../types';
 import { IUserRepository } from './user.repository.interface';
-import {Address, UserModel} from '@prisma/client';
+import { UserModel } from '@prisma/client';
 import { access, pathExistsSync, writeFile } from 'fs-extra';
 import { path } from 'app-root-path';
 import { MFile } from '../files/mfile.class';
 import { mkdir } from 'fs';
-import {UserAdressDto} from "./dto/user-adress.dto";
 import {UserEditProfileDto} from "./dto/user-editProfile.dto";
 
 @injectable()
@@ -67,12 +66,7 @@ export class UserService {
 			}
 		});
 	}
-	async editAddress(address: UserAdressDto): Promise<Address | null> {
-		return this.userRepository.editAddress(address);
-	}
-	async createAddress(address: UserAdressDto): Promise<Address | null> {
-		return this.userRepository.createAddress(address);
-	}
+	
 	async getProfileInfoById(id: string) {
 		return await this.userRepository.getProfileInfoById(id).then((res) => {
 			if (res) {

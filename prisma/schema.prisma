@@ -15,7 +15,8 @@ model UserModel {
   login    String @unique
   phone String? @unique
   hashpassword String
-  favorite    Basket[] @relation("UserBasket")
+  type String @default("User")
+  favorite    Favorite[] @relation("UserBasket")
   Comment  Comment[] @relation("CommentWritenBy")
   avatar String?
   isActive Boolean
@@ -35,6 +36,7 @@ model SecondLevelCategory {
    firstLevelCategory FirstLevelCategory @relation("firstCategory", fields: [firstLevelId], references: [id])
    firstLevelId String
    model ModelDevice[] @relation("ModelDevice")
+    brands BrandOnSecondCategory[]
 }
 
 
@@ -54,15 +56,17 @@ model ModelDevice {
   name    String @unique
   alias String @unique
   image String?
-  product Product[] @relation("ModelByProduct")
   Description         String?
-  image String?
   secondCategoryId String
   quantity            Int @default(0)
   favorite Favorite[] @relation("FavoriteUser")
   secondCategory SecondLevelCategory @relation("ModelDevice", fields: [secondCategoryId], references: [id], onUpdate: NoAction)
   Comment             Comment[] @relation("CommentProduct")
   brand Brand @relation("BrandByModel", fields: [brandId], references: [id])
+  brandId String
+  TagId       String
+  rating Rating[] @relation("RatingModel")
+  tag   Tag   @relation("TagModels", fields: [TagId], references: [id], onUpdate: NoAction)
 }
 
 model Comment {
@@ -83,6 +87,24 @@ model Rating {
     writtenById String
     modelDeviceId   String
     writtenBy   UserModel @relation("RatingWritenBy", fields: [writtenById], references: [id])
-    model     ModelDevice   @relation("RatingProduct", fields: [modelDeviceId], references: [id], onUpdate: NoAction)
+    modelDevice     ModelDevice   @relation("RatingModel", fields: [modelDeviceId], references: [id], onUpdate: NoAction)
 }
 
+model Tag {
+  id      String       @id @default(uuid())
+  name     String    @unique
+  model   ModelDevice[] @relation("TagModels")
+}
+model Brand {
+  id      String       @id @default(uuid())
+  name    String @unique
+  secondLevelCategory BrandOnSecondCategory[]
+  model ModelDevice[] @relation("BrandByModel")
+}
+model BrandOnSecondCategory {
+   brand       Brand     @relation(fields: [brandId], references: [id])
+  brandId     String
+  category   SecondLevelCategory @relation(fields: [categoryId], references: [id])
+  categoryId String
+  @@id([brandId, categoryId])
+  }
