@@ -5,7 +5,7 @@ import { IConfigService } from '../config/config.service.interface';
 import { IUserRepository } from '../user/user.repository.interface';
 import { ProductRepository } from '../Product/product.repository';
 import { UserAbilityRepository } from './userAbility.repository';
-import { UserModel, Basket, Product } from '@prisma/client';
+import {Favorite, UserModel} from '@prisma/client';
 import { updateProductToBasketDto } from './dto/update.basket';
 import { MFile } from '../files/mfile.class';
 import { access, pathExistsSync, writeFile } from 'fs-extra';
@@ -26,7 +26,7 @@ export class UserAbilityService {
 	}
 	async setComment(comment: Comment) {
 		if (!comment.file) {
-			return this.productRepository.setCommentProduct(
+			return this.productRepository.setCommentModelDevice(
 				comment.comment,
 				comment.writtenById,
 				comment.modelDeviceId,
@@ -93,7 +93,7 @@ export class UserAbilityService {
 				images = `${file.originalname.split('.')[0]}.webp`;
 			}
 		}
-		return this.productRepository.setCommentProduct(
+		return this.productRepository.setCommentModelDevice(
 			comment.comment,
 			comment.writtenById,
 			comment.modelDeviceId,
@@ -101,11 +101,11 @@ export class UserAbilityService {
 			images,
 		);
 	}
-	async addBasket(productId: string, userId: string, quantity: number): Promise<Basket | null> {
-		return this.productRepository.addProductToBasket(productId, userId, quantity, false);
+	async addBasket(productId: string, userId: string, quantity: number): Promise<Favorite | null> {
+		return this.productRepository.addmodelDeviceToFavorite(productId, userId);
 	}
-	async getBasketUser(userId: string): Promise<Basket[] | null> {
-		return this.userRepository.getBasketByUser(userId);
+	async getFavoriteUser(userId: string): Promise<Favorite[] | null> {
+		return this.userRepository.getFavoriteByUser(userId);
 	}
 	public async getUserInfo(user: string): Promise<UserModel | null> {
 		return this.userRepository.find(user);
@@ -113,13 +113,7 @@ export class UserAbilityService {
 	async setRatingProduct(rating: Rating): Promise<Rating | null> {
 		return this.productRepository.setRating(rating);
 	}
-	async deleteBasket(id: string): Promise<Basket | null> {
+	async deleteBasket(id: string): Promise<Favorite | null> {
 		return this.userAbilityServiceRepository.deleteProductToBasket(id);
-	}
-	async editQuantityBasketProduct(id: string, quantity: number): Promise<Basket | null> {
-		return this.userAbilityServiceRepository.editQuantityBasketProduct(id, quantity);
-	}
-	async updateProductToBasket(basket: updateProductToBasketDto): Promise<Basket | null> {
-		return this.userAbilityServiceRepository.updateProductToBasket(basket);
 	}
 }

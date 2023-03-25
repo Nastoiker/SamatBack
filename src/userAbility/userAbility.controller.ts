@@ -63,18 +63,6 @@ export class userAbility extends BaseController {
 				middlewares: [new AuthGuard()],
 			},
 			{
-				path: '/updateBasket',
-				method: 'post',
-				func: this.updateProductToBasket,
-				middlewares: [new AuthGuard()],
-			},
-			{
-				path: '/editQuantityBasketProduct',
-				method: 'post',
-				func: this.editQuantityBasketProduct,
-				middlewares: [new AuthGuard()],
-			},
-			{
 				path: '/deleteComment',
 				method: 'post',
 				func: this.deleteComment,
@@ -109,21 +97,7 @@ export class userAbility extends BaseController {
 			this.ok(res, { mes: 'Ваш комментарий оставлен' });
 		}
 	}
-	async editQuantityBasketProduct(
-		req: Request<{}, {}, { basketId: string; quantity: number }>,
-		res: Response,
-		next: NextFunction,
-	) {
-		const writtenById = await this.userService.getUserInfo(req.user);
-		if (!writtenById) {
-			return next(new HTTPError(422, 'Ошибка добавления товара в корзину'));
-		}
-		const edited = await this.userAbilityService.editQuantityBasketProduct(
-			req.body.basketId,
-			req.body.quantity,
-		);
-		this.ok(res, { edited });
-	}
+
 	async addProductToBasket(
 		req: Request<{}, {}, { productId: string; quantity: number }>,
 		res: Response,
@@ -226,25 +200,12 @@ export class userAbility extends BaseController {
 		});
 		this.ok(res, { rating });
 	}
-	async updateProductToBasket(
-		req: Request<{}, {}, updateProductToBasketDto>,
-		res: Response,
-		next: NextFunction,
-	) {
-		const writtenById = await this.userService.getUserInfo(req.user);
-		if (!writtenById) {
-			next(new HTTPError(422, 'Ошибка получения корзины '));
-		} else {
-			const update = await this.userAbilityService.updateProductToBasket(req.body);
-			this.ok(res, { update });
-		}
-	}
 	async getBasketUser(req: Request, res: Response, next: NextFunction) {
 		const userId = await this.userService.getUserInfo(req.user);
 		if (!userId) {
 			next(new HTTPError(422, 'Ошибка получения корзины '));
 		} else {
-			const basket = await this.userAbilityService.getBasketUser(userId.id);
+			const basket = await this.userAbilityService.getFavoriteUser(userId.id);
 			this.ok(res, basket);
 		}
 	}

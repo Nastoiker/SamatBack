@@ -22,7 +22,7 @@ export class AdminRepository {
 		});
 	}
 	async updateTagFromProduct(id: string, TagId: string): Promise<Tag> {
-		return this.prismaService.client.product.update({
+		return this.prismaService.client.modelDevice.update({
 			where: {
 				id,
 			},

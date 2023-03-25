@@ -11,7 +11,6 @@ import { access, pathExistsSync, writeFile } from 'fs-extra';
 import { path } from 'app-root-path';
 import { MFile } from '../files/mfile.class';
 import { mkdir } from 'fs';
-import {UserEditProfileDto} from "./dto/user-editProfile.dto";
 
 @injectable()
 export class UserService {
@@ -66,7 +65,6 @@ export class UserService {
 			}
 		});
 	}
-	
 	async getProfileInfoById(id: string) {
 		return await this.userRepository.getProfileInfoById(id).then((res) => {
 			if (res) {
@@ -78,17 +76,5 @@ export class UserService {
 	async verifyEmail(id: string): Promise<UserModel | null> {
 		return await this.userRepository.verifyEmail(id);
 	}
-	async editProfileInfo(
-		email: string,
-		info: UserEditProfileDto,
-		id: string,
-	): Promise<UserModel | null> {
-		const check = await this.validateUser({ email, password: info.password });
-		if (!check) return null;
-		const newUser = new User(email, info.login);
-		const salt = this.configService.get('SALT');
-		await newUser.setPassword(info.hashpassword, Number(salt));
-		info.hashpassword = newUser.hashpassword;
-		return await this.userRepository.editProfileInfo(info, id);
-	}
+
 }

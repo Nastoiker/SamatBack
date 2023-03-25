@@ -20,8 +20,6 @@ import multer from 'multer';
 import { AdminController } from './adminAbility/admin.controller';
 import { AdminService } from './adminAbility/admin.service';
 import { AdminRepository } from './adminAbility/admin.repository';
-import { CronService } from './cront/cron.service';
-import { CronRepository } from './cront/cron.repository';
 @injectable()
 export class App {
 	server!: Server;
@@ -41,8 +39,6 @@ export class App {
 		@inject(TYPES.AdminController) private adminController: AdminController,
 		@inject(TYPES.AdminService) private adminService: AdminService,
 		@inject(TYPES.AdminRepository) private adminRepository: AdminRepository,
-		@inject(TYPES.CronService) private cronService: CronService,
-		@inject(TYPES.CronRepository) private cronRepository: CronRepository,
 	) {
 		this.app = express();
 		this.port = 8000;

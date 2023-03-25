@@ -111,12 +111,7 @@ export class ProductController extends BaseController {
 				func: this.setBrandOnSecondCategory,
 				middlewares: [new AdminGuard()],
 			},
-			{
-				path: '/createModel',
-				method: 'post',
-				func: this.createModel,
-				middlewares: [new AdminGuard(), new ValidateMiddleware(ModelDeviceDto)],
-			},
+
 			//создание категории к брендам
 			{
 				path: '/setBrandOnSecondCategory',
@@ -173,17 +168,6 @@ export class ProductController extends BaseController {
 		const newProduct = await this.productService.create(body);
 		if (!newProduct) {
 			return next(new HTTPError(401, 'Ошибка создания продукта'));
-		}
-		this.ok(res, { ...newProduct });
-	}
-	async createModel(
-		{ body }: Request<{}, {}, ModelDeviceDto>,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> {
-		const newProduct = await this.productService.createModel(body);
-		if (!newProduct) {
-			return next(new HTTPError(401, 'Ошибка создания модел'));
 		}
 		this.ok(res, { ...newProduct });
 	}

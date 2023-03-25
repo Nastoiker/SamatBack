@@ -27,10 +27,6 @@ import { FileService } from './files/file.service';
 import { AdminService } from './adminAbility/admin.service';
 import { AdminRepository } from './adminAbility/admin.repository';
 import { AdminController } from './adminAbility/admin.controller';
-import { CronService } from './cront/cron.service';
-import { CronRepository } from './cront/cron.repository';
-
-
 const appContainerBinding = new ContainerModule((bind: interfaces.Bind) => {
 	bind<Ilogger>(TYPES.LoggerService).to(LoggerService).inSingletonScope();
 	bind<IExceptionFilter>(TYPES.ExceptionFilter).to(ExceptionFilter).inSingletonScope();
@@ -39,7 +35,8 @@ const appContainerBinding = new ContainerModule((bind: interfaces.Bind) => {
 	bind<IConfigService>(TYPES.ConfigService).to(ConfigService).inSingletonScope();
 	bind<PrismaService>(TYPES.PrismaService).to(PrismaService).inSingletonScope();
 	bind<IUserRepository>(TYPES.UserRepository).to(UserRepository).inSingletonScope();
-	bind<IProductRepository>(TYPES.ProductRepository).to(ProductRepository).inSingletonScope();
+	bind<ProductRepository>(TYPES.ProductRepository).to(ProductRepository).inSingletonScope();
+	bind<ProductService>(TYPES.ProductService).to(ProductService).inSingletonScope();
 	bind<IProductController>(TYPES.ProductController).to(ProductController).inSingletonScope();
 	bind<userAbility>(TYPES.userAbility).to(userAbility).inSingletonScope();
 	bind<UserAbilityService>(TYPES.UserAbilityService).to(UserAbilityService).inSingletonScope();
@@ -50,8 +47,6 @@ const appContainerBinding = new ContainerModule((bind: interfaces.Bind) => {
 	bind<AdminService>(TYPES.AdminService).to(AdminService).inSingletonScope();
 	bind<AdminRepository>(TYPES.AdminRepository).to(AdminRepository).inSingletonScope();
 	bind<AdminController>(TYPES.AdminController).to(AdminController).inSingletonScope();
-	bind<CronService>(TYPES.CronService).to(CronService).inSingletonScope();
-	bind<CronRepository>(TYPES.CronRepository).to(CronRepository).inSingletonScope();
 	bind<App>(TYPES.Application).to(App).inSingletonScope();
 });
 

@@ -76,24 +76,12 @@ export class ProductCreate {
 	name: string;
 	@IsString()
 	alias: string;
-	@IsNumber()
-	price: number;
-	@IsOptional()
-	@IsNumber()
-	oldPrice?: number;
 	@IsString()
 	brandId: string;
 	@IsString()
-	TagId: string;
-	@IsNumber()
-	@IsOptional()
-	Ram?: number;
-	@IsNumber()
-	@IsOptional()
-	Memory?: number;
+	secondCategoryId: string;
 	@IsString()
-	@IsOptional()
-	Color?: string;
+	TagId: string;
 	@IsString()
 	@IsOptional()
 	ColorAlias?: string;
@@ -102,8 +90,6 @@ export class ProductCreate {
 	image?: string;
 	@IsNumber()
 	quantity: number;
-	@IsString()
-	modelDeviceId: string;
 	@IsString()
 	Description: string;
 }

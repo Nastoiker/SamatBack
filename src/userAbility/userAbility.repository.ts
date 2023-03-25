@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
 import { PrismaService } from '../database/prisma.service';
 import { Comment } from '../Product/dto/create-product.dto';
-import { Basket } from '@prisma/client';
+import { Favorite } from '@prisma/client';
 import { updateProductToBasketDto } from './dto/update.basket';
 @injectable()
 export class UserAbilityRepository {
@@ -19,50 +19,24 @@ export class UserAbilityRepository {
 			},
 		});
 	}
-	async deleteProductToBasket(id: string): Promise<Basket | null> {
-		return this.prismaService.client.basket.delete({
+	async deleteProductToBasket(id: string): Promise<Favorite | null> {
+		return this.prismaService.client.favorite.delete({
 			where: {
 				id,
 			},
 		});
 	}
-	async editQuantityBasketProduct(id: string, quantity: number): Promise<Basket | null> {
-		return this.prismaService.client.basket.update({
-			where: {
-				id,
-			},
-			data: {
-				quantity,
-			},
-		});
-	}
-	async updateProductToBasket({
-		id,
-		buying,
-		quantity,
-	}: updateProductToBasketDto): Promise<Basket | null> {
-		return this.prismaService.client.basket.update({
-			where: {
-				id,
-			},
-			data: {
-				buying,
-				quantity,
-			},
-		});
-	}
+
+
 	async addProductToBasket(
-		productId: string,
+		modelId: string,
 		userId: string,
-		quantity: number,
-		buying: boolean,
-	): Promise<Basket | null> {
-		return await this.prismaService.client.basket.create({
+
+	): Promise<Favorite | null> {
+		return await this.prismaService.client.favorite.create({
 			data: {
-				productId,
+				modelId,
 				userId,
-				quantity,
-				buying,
 			},
 		});
 	}

@@ -6,28 +6,26 @@ import {
 	brandOnSecondCategory,
 	Comment,
 	ModelDeviceDto,
-	modelDeviceModel,
-	modelDeviceUpdate,
+	ProductCreate,
+	ProductModel,
+	ProductUpdate,
 	Rating,
 	SecondCategoryOnbrand,
-} from './dto/create-modelDevice.dto';
+} from './dto/create-product.dto';
 import {
 	Brand,
 	ModelDevice,
-	modelDevice,
 	Tag,
 	SecondLevelCategory,
 	FirstLevelCategory,
-	Basket,
-	Prisma,
+	Favorite,
 } from '@prisma/client';
-import { ImodelDeviceRepository } from './modelDevice.repository.interface';
 import { setBrandsOnCategory, setSecondCategoryOnBrand } from './dto/firstCategory.dto';
 
 @injectable()
-export class ProductRepository implements ImodelDeviceRepository {
+export class ProductRepository {
 	constructor(@inject(TYPES.PrismaService) private prismaService: PrismaService) {}
-	async findLikeSqlModelBrand(searchByWorld: string): Promise<modelDevice[] | null> {
+	async findLikeSqlModelBrand(searchByWorld: string): Promise<ModelDevice[] | null> {
 		console.log(searchByWorld);
 		// const query = `%${searchByWorld}%`;
 		// return await this.prismaService.client.$queryRawUnsafe<modelDevice[]>(
@@ -42,12 +40,7 @@ export class ProductRepository implements ImodelDeviceRepository {
 			},
 		});
 	}
-	async createmodelDevice(data: modelDeviceModel): Promise<modelDevice> {
-		return this.prismaService.client.modelDevice.create({
-			data: { ...data },
-		});
-	}
-	async createModel(data: ModelDeviceDto): Promise<ModelDevice> {
+	async createModel(data: ProductCreate): Promise<ModelDevice> {
 		return this.prismaService.client.modelDevice.create({
 			data: { ...data },
 		});
@@ -57,25 +50,24 @@ export class ProductRepository implements ImodelDeviceRepository {
 			data: { ...data },
 		});
 	}
-	async findmodelDevice(name: string): Promise<modelDevice | null> {
+	async findmodelDevice(name: string): Promise<ModelDevice | null> {
 		return this.prismaService.client.modelDevice.findFirst({
 			where: {
 				name,
 			},
 		});
 	}
-	async findByAlias(alias: string): Promise<modelDevice | null> {
+	async findByAlias(alias: string): Promise<ModelDevice | null> {
 		return this.prismaService.client.modelDevice.findFirst({
 			where: {
 				alias,
 			},
 			include: {
 				brand: true,
-				modelDevice: true,
 			},
 		});
 	}
-  
+
 	async findBrand(name: string): Promise<Brand | null> {
 		return this.prismaService.client.brand.findFirst({
 			where: {
@@ -83,25 +75,24 @@ export class ProductRepository implements ImodelDeviceRepository {
 			},
 		});
 	}
-	async getmodelDeviceById(id: string): Promise<modelDevice | null> {
+	async getmodelDeviceById(id: string): Promise<ModelDevice | null> {
 		return await this.prismaService.client.modelDevice.findFirst({
 			where: {
 				id,
 			},
 			include: {
 				brand: true,
-				modelDevice: true,
 			},
 		});
 	}
-	async findmodelDevices(brandId: string): Promise<modelDevice[] | null> {
+	async findmodelDevices(brandId: string): Promise<ModelDevice[] | null> {
 		return this.prismaService.client.modelDevice.findMany({
 			where: {
 				brandId,
 			},
 		});
 	}
-	async deletemodelDevice(id: string): Promise<modelDevice | null> {
+	async deletemodelDevice(id: string): Promise<ModelDevice | null> {
 		return this.prismaService.client.modelDevice.delete({
 			where: {
 				id,
@@ -129,7 +120,7 @@ export class ProductRepository implements ImodelDeviceRepository {
 			},
 		});
 	}
-	async updateByIdPhoto(id: string, image: string): Promise<modelDevice | null> {
+	async updateByIdPhoto(id: string, image: string): Promise<ModelDevice | null> {
 		return this.prismaService.client.modelDevice.update({
 			where: {
 				id,
@@ -139,32 +130,16 @@ export class ProductRepository implements ImodelDeviceRepository {
 			},
 		});
 	}
-	async addmodelDeviceToBasket(
-		modelDeviceId: string,
-		userId: string,
-		quantity: number,
-		buying: boolean,
-	): Promise<Basket | null> {
-		return this.prismaService.client.basket.create({
+	async addmodelDeviceToFavorite(modelId: string, userId: string): Promise<Favorite | null> {
+		return this.prismaService.client.favorite.create({
 			data: {
-				modelDeviceId,
+				modelId,
 				userId,
-				quantity,
-				buying,
 			},
 		});
 	}
-	async updateByIdPrice(id: string, price: number): Promise<modelDevice | null> {
-		return this.prismaService.client.modelDevice.update({
-			where: {
-				id,
-			},
-			data: {
-				price,
-			},
-		});
-	}
-	async updatemodelDevice(id: string, modelDevice: modelDeviceUpdate): Promise<modelDevice | null> {
+
+	async updatemodelDevice(id: string, modelDevice: ProductUpdate): Promise<ModelDevice | null> {
 		return this.prismaService.client.modelDevice.update({
 			where: {
 				id,
@@ -181,22 +156,15 @@ export class ProductRepository implements ImodelDeviceRepository {
 				name,
 			},
 			include: {
-				modelDevice: true,
+				model: true,
 			},
 		});
 	}
-	async createModelmodelDevice(model: ModelDeviceDto): Promise<ModelDevice | null> {
-		return this.prismaService.client.modelDevice.create({
-			data: { ...model },
-		});
-	}
+
 	async findModelByName(name: string): Promise<ModelDevice | null> {
 		return this.prismaService.client.modelDevice.findFirst({
 			where: {
 				name,
-			},
-			include: {
-				modelDevice: true,
 			},
 		});
 	}
@@ -216,7 +184,7 @@ export class ProductRepository implements ImodelDeviceRepository {
 				name,
 			},
 			include: {
-				modelDevice: true,
+				model: true,
 			},
 		});
 	}
@@ -228,11 +196,10 @@ export class ProductRepository implements ImodelDeviceRepository {
 			include: {
 				brand: true,
 				Comment: true,
-				modelDevice: true,
 			},
 		});
 	}
-	async setCommentmodelDevice(
+	async setCommentModelDevice(
 		comment: string,
 		writtenById: string,
 		modelDeviceId: string,
@@ -299,6 +266,7 @@ export class ProductRepository implements ImodelDeviceRepository {
 			},
 		});
 	}
+
 	//создание брендов к категории
 	async setCategoryOnBrand(setCategoryOnBrand: setBrandsOnCategory): Promise<Brand> {
 		const brands = setCategoryOnBrand.categories;
@@ -325,17 +293,6 @@ export class ProductRepository implements ImodelDeviceRepository {
 			include: {
 				brand: true,
 				Comment: true,
-			},
-		});
-	}
-	async getmodelDevicesDiscount(): Promise<modelDevice[]> {
-		return this.prismaService.client.modelDevice.findMany({
-			where: {
-				NOT: [
-					{
-						oldPrice: null,
-					},
-				],
 			},
 		});
 	}

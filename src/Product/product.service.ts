@@ -1,11 +1,11 @@
 import { IProductService } from './product.service.interface';
 import {
 	Brand,
-	Product,
 	SecondLevelCategory,
 	FirstLevelCategory,
 	Comment,
-	ModelDevice, Tag,
+	ModelDevice,
+	Tag,
 } from '@prisma/client';
 import {
 	BrandDevice,
@@ -25,24 +25,16 @@ import { FileElementResponse } from '../files/dto/fileElement.response';
 import { mkdir } from 'fs';
 import { setBrandsOnCategory, setSecondCategoryOnBrand } from './dto/firstCategory.dto';
 @injectable()
-export class ProductService implements IProductService {
+export class ProductService {
 	constructor(@inject(TYPES.ProductRepository) private productRepository: ProductRepository) {}
-	async findLikeSqlModelBrand(searchByWorld: string): Promise<Product[] | null> {
+	async findLikeSqlModelBrand(searchByWorld: string): Promise<ModelDevice[] | null> {
 		return this.productRepository.findLikeSqlModelBrand(searchByWorld);
 	}
-	async create(product: ProductCreate): Promise<Product | null> {
-		if (await this.productRepository.findProduct(product.name)) {
+	async create(product: ProductCreate): Promise<ModelDevice | null> {
+		if (await this.productRepository.findmodelDevice(product.name)) {
 			return null;
 		}
-		const checkProduct = await this.getModelBrandId(product);
-		return this.productRepository.createProduct(checkProduct as unknown as ProductModel);
-	}
-	async createModel(model: ModelDeviceDto): Promise<ModelDevice | null> {
-		if (await this.productRepository.findProduct(model.name)) {
-			return null;
-		}
-		// const checkProduct = await this.getModelBrandId(model);
-		return this.productRepository.createModel(model);
+		return this.productRepository.createModel(product);
 	}
 	async createBrand(brand: BrandDevice): Promise<Brand | null> {
 		if (await this.productRepository.findBrand(brand.name)) {
@@ -51,36 +43,39 @@ export class ProductService implements IProductService {
 		// const checkProduct = await this.getModelBrandId(brand);
 		return this.productRepository.createBrand(brand);
 	}
-	async delete(id: string): Promise<Product | null> {
-		return this.productRepository.deleteProduct(id);
+	async delete(id: string): Promise<ModelDevice | null> {
+		return this.productRepository.deletemodelDevice(id);
 	}
-	async findByAlias(alias: string): Promise<Product | null> {
+	async findByAlias(alias: string): Promise<ModelDevice | null> {
 		return this.productRepository.findByAlias(alias);
 	}
-	async find(name: string): Promise<Product | null> {
-		return this.productRepository.findProduct(name);
+	async find(name: string): Promise<ModelDevice | null> {
+		return this.productRepository.findmodelDevice(name);
 	}
-	async findProducts(brandId: string): Promise<Product[] | null> {
-		return this.productRepository.findProducts(brandId);
+	async findProducts(brandId: string): Promise<ModelDevice[] | null> {
+		return this.productRepository.findmodelDevices(brandId);
 	}
-	async update(product: ProductUpdate): Promise<Product | null> {
-		const id = await this.productRepository.findProduct(product.name);
+	async update(product: ProductUpdate): Promise<ModelDevice | null> {
+		const id = await this.productRepository.findmodelDevice(product.name);
 		if (!id) {
 			return null;
 		}
-		return this.productRepository.updateProduct(id.id, product);
+		return this.productRepository.updatemodelDevice(id.id, product);
 	}
-	async getModelBrandId(product: ProductCreate) {
-		const brandId = await this.productRepository.findBrandByName(product.brandId);
-		const modelId = await this.productRepository.findModelByName(product.modelDeviceId);
-		const tag = await this.productRepository.findTagByName(product.TagId);
-		return { ...product, brandId: brandId?.id, modelDeviceId: modelId?.id, TagId: tag?.id };
+	async setCategoryOnBrand(setBrandsOnCategory: setBrandsOnCategory): Promise<Brand> {
+		return this.productRepository.setCategoryOnBrand(setBrandsOnCategory);
 	}
+	// async getModelBrandId(product: ProductCreate) {
+	// 	const brandId = await this.productRepository.findBrandByName(product.brandId);
+	// 	const modelId = await this.productRepository.findModelByName(product.modelDeviceId);
+	// 	const tag = await this.productRepository.findTagByName(product.TagId);
+	// 	return { ...product, brandId: brandId?.id, modelDeviceId: modelId?.id, TagId: tag?.id };
+	// }
 	async getAll(): Promise<(ModelDevice & { brand: Brand; Comment: Comment[] })[]> {
-		return this.productRepository.getAllProducts();
+		return this.productRepository.getAllmodelDevices();
 	}
 	async getByFirstCategory(firstLevelId: string): Promise<SecondLevelCategory[] | null> {
-		return this.productRepository.getProductByCategory(firstLevelId);
+		return this.productRepository.getmodelDeviceByCategory(firstLevelId);
 	}
 	async setSecondCategory(
 		name: string,
@@ -89,8 +84,8 @@ export class ProductService implements IProductService {
 	): Promise<SecondLevelCategory | null> {
 		return this.productRepository.setSecondCategory(name, firstLevelId, alias);
 	}
-	async saveFile(files: MFile[], productId: string): Promise<Product | null> {
-		const product = await this.productRepository.getProductById(productId);
+	async saveFile(files: MFile[], productId: string): Promise<ModelDevice | null> {
+		const product = await this.productRepository.getmodelDeviceById(productId);
 		if (!product) {
 			return null;
 		}
@@ -120,9 +115,9 @@ export class ProductService implements IProductService {
 			});
 		}
 		if (
-			!pathExistsSync(`./uploads/product/${brandId}/${modelDeviceId}/${product.ColorAlias}`)
+			!pathExistsSync(`./uploads/product/${brandId}/${modelDeviceId}`)
 		) {
-			mkdir(`./uploads/product/${brandId}/${modelDeviceId}/${product.ColorAlias}`, (err) => {
+			mkdir(`./uploads/product/${brandId}/${modelDeviceId}`, (err) => {
 				if (err) {
 					console.error(err);
 				}
@@ -132,17 +127,14 @@ export class ProductService implements IProductService {
 		const res: FileElementResponse[] = [];
 		let images = '';
 		for (const file of files) {
-			await access(
-				`${upload}/${brandId}/${modelDeviceId}/${product.ColorAlias}/${file.originalname}`,
-				(err) => {
-					writeFile(
-						`${upload}/${brandId}/${modelDeviceId}/${product.ColorAlias}/${file.originalname}`,
-						file.buffer,
-					);
-				},
-			);
+			await access(`${upload}/${brandId}/${modelDeviceId}/${file.originalname}`, (err) => {
+				writeFile(
+					`${upload}/${brandId}/${modelDeviceId}/${file.originalname}`,
+					file.buffer,
+				);
+			});
 			res.push({
-				url: `${upload}/${brandId}/${modelDeviceId}/${product.ColorAlias}/${name}`,
+				url: `${upload}/${brandId}/${modelDeviceId}/${name}`,
 				name: file.originalname,
 			});
 			if (images.length > 0) {
@@ -156,72 +148,21 @@ export class ProductService implements IProductService {
 	async getCategory(): Promise<FirstLevelCategory[] | null> {
 		return this.productRepository.getCategory();
 	}
-	async getById(id: string): Promise<Product | null> {
-		return await this.productRepository.getProductById(id);
+	async getById(id: string): Promise<ModelDevice | null> {
+		return await this.productRepository.getmodelDeviceById(id);
 	}
 	//создание категории к брендам
 	async getProductByBrandSecondCategory(
 		secondLevelId: string,
 		brandId: string,
 	): Promise<ModelDevice[] | null> {
-		return this.productRepository.getProductByBrandSecondCategory(secondLevelId, brandId);
+		return this.productRepository.getmodelDeviceByBrandSecondCategory(secondLevelId, brandId);
 	}
 	async getBrandProductByCategory(secondLevelId: string): Promise<Brand[]> {
-		return this.productRepository.getBrandProductByCategory(secondLevelId);
+		return this.productRepository.getBrandmodelDeviceByCategory(secondLevelId);
 	}
 	async getBrands(): Promise<Brand[]> {
 		return this.productRepository.getBrands();
-	}
-	async getProductsDiscount(): Promise<Product[]> {
-		return this.productRepository.getProductsDiscount();
-	}
-  //создание категории к брендам
-	async setBrandOnSecondCategory(setBrandsOnCategory: setSecondCategoryOnBrand) {
-		const brands = setBrandsOnCategory.id;
-		const setBrands: brandOnSecondCategory[] = [];
-		for (const brand of brands) {
-			setBrands.push({ brand: { connect: { id: brand } } });
-		}
-		const { name, firstLevelId, alias } = setBrandsOnCategory;
-		return await this.prismaService.client.secondLevelCategory.create({
-			data: {
-				name,
-				alias,
-				firstLevelId,
-				brands: {
-					create: [...setBrands],
-				},
-			},
-		});
-	}
-	//создание брендов к категории
-	async setCategoryOnBrand(setCategoryOnBrand: setBrandsOnCategory): Promise<Brand> {
-		const brands = setCategoryOnBrand.categories;
-		const setBrands: SecondCategoryOnbrand[] = [];
-		for (const brand of brands) {
-			setBrands.push({ category: { connect: { id: brand } } });
-		}
-		const name = setCategoryOnBrand.name;
-		return this.prismaService.client.brand.create({
-			data: {
-				name,
-				secondLevelCategory: {
-					create: [...setBrands],
-				},
-			},
-		});
-	}
-	async getProductByBrandSecondCategory(secondCategoryId: string, brandId: string) {
-		return await this.prismaService.client.modelDevice.findMany({
-			where: {
-				secondCategoryId,
-				brandId,
-			},
-			include: {
-				brand: true,
-				Comment: true,
-			},
-		});
 	}
 	async getTags(): Promise<Tag[]> {
 		return this.productRepository.getTags();

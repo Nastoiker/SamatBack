@@ -2,10 +2,9 @@ import { IUserRepository } from './user.repository.interface';
 import { PrismaService } from '../database/prisma.service';
 import { inject, injectable } from 'inversify';
 import { TYPES } from '../types';
-import {Basket, UserModel, Comment, Address} from '@prisma/client';
+import {Favorite, UserModel, Comment} from '@prisma/client';
 import { User } from './user.entity';
-import {UserAdressDto} from "./dto/user-adress.dto";
-import {UserEditProfileDto} from "./dto/user-editProfile.dto";
+
 @injectable()
 export class UserRepository implements IUserRepository {
 	constructor(@inject(TYPES.PrismaService) private prismaService: PrismaService) {}
@@ -30,14 +29,13 @@ export class UserRepository implements IUserRepository {
 			},
 		});
 	}
-	async getBasketByUser(userId: string): Promise<Basket[] | null> {
-		return this.prismaService.client.basket.findMany({
+	async getFavoriteByUser(userId: string): Promise<Favorite[] | null> {
+		return this.prismaService.client.favorite.findMany({
 			where: {
 				userId,
 			},
 			include: {
-				product: true,
-
+				model: true,
 			},
 		});
 	}
@@ -48,9 +46,8 @@ export class UserRepository implements IUserRepository {
 			},
 			include: {
 				Comment: true,
-				basket: true,
+				favorite: true,
 				rating: true,
-				address: true,
 			},
 		});
 	}
@@ -103,31 +100,5 @@ export class UserRepository implements IUserRepository {
 			},
 		});
 	}
-	async createAddress(address: UserAdressDto): Promise<Address | null> {
-		return this.prismaService.client.address.create({
-			data: { ...address },
-		});
-	}
-	async editAddress(address: UserAdressDto): Promise<Address | null> {
-		const { userId, ...addressUser } = address;
-		return this.prismaService.client.address.update({
-			where: {
-				userId,
-			},
-			data: {
-				...addressUser,
-			},
-		});
-	}
-	async editProfileInfo(info: UserEditProfileDto, id: string): Promise<UserModel | null> {
-		const { password, ...inf } = info;
-		return this.prismaService.client.userModel.update({
-			where: {
-				id,
-			},
-			data: {
-				...inf,
-			},
-		});
-	}
+
 }

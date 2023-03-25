@@ -13,13 +13,10 @@ import { ValidateMiddleware } from '../common/validate.middleware';
 import { sign } from 'jsonwebtoken';
 import { IConfigService } from '../config/config.service.interface';
 import { AuthGuard } from '../common/Auth.guard';
-import { OAuth2Client } from 'google-auth-library';
 import { MulterMiddleware } from '../common/Multer.middleware';
 import { MFile } from '../files/mfile.class';
 import { FileService } from '../files/file.service';
-import { MailService } from '../Mail/Mail.service';
 import { UserModel } from '@prisma/client';
-import {UserAdressDto} from "./dto/user-adress.dto";
 import {UserEditProfileDto} from "./dto/user-editProfile.dto";
 
 @injectable()
@@ -37,12 +34,6 @@ export class UserController extends BaseController implements IUserController {
 				method: 'post',
 				func: this.register,
 				middlewares: [new ValidateMiddleware(UserRegisterDto)],
-			},
-			{
-				path: '/verify:id',
-				method: 'get',
-				func: this.verifyEmail,
-				middlewares: [],
 			},
 			{
 				path: '/login',
@@ -80,24 +71,6 @@ export class UserController extends BaseController implements IUserController {
 				func: this.authorAuthorization,
 				middlewares: [new AuthGuard()],
 			},
-			{
-				path: '/editAddress',
-				method: 'post',
-				func: this.editAddress,
-				middlewares: [new AuthGuard()],
-			},
-			{
-				path: '/createAddress',
-				method: 'post',
-				func: this.createAddress,
-				middlewares: [new AuthGuard()],
-			},
-			{
-				path: '/editProfileInfo',
-				method: 'post',
-				func: this.editProfileInfo,
-				middlewares: [new AuthGuard()],
-			},
 		]);
 	}
 	async register(
@@ -112,8 +85,7 @@ export class UserController extends BaseController implements IUserController {
 			this.ok(res, { email: result?.email, id: result?.id });
 		}
 	}
-	
-	
+
 	async login(
 		{ body }: Request<{}, {}, UserLoginDto>,
 		res: Response,
@@ -197,21 +169,5 @@ export class UserController extends BaseController implements IUserController {
 		const { hashpassword, ...user } = writtenById;
 		this.ok(res, { ...user });
 	}
-	public async editProfileInfo(
-		request: Request<{}, {}, UserEditProfileDto>,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> {
-		const writtenById = await this.userService.getUserInfo(request.user);
-		if (!writtenById) {
-			return next(new HTTPError(401, 'Ошибка входа'));
-		}
-		const result = await this.userService.editProfileInfo(
-			writtenById.email,
-			request.body,
-			writtenById.id,
-		);
-		if (!result) return next(new HTTPError(401, 'Ошибка редактирования'));
-		this.ok(res, { ...result });
-	}
+
 }
