@@ -33,19 +33,19 @@ export class userAbility extends BaseController {
 				middlewares: [new AuthGuard()],
 			},
 			{
-				path: '/addBasket',
+				path: '/addFavorite',
 				method: 'post',
 				func: this.addProductToBasket,
 				middlewares: [new AuthGuard()],
 			},
 			{
-				path: '/deleteBasket',
+				path: '/deleteFavorite',
 				method: 'post',
 				func: this.deleteProductToBasket,
 				middlewares: [new AuthGuard()],
 			},
 			{
-				path: '/getBasket',
+				path: '/getFavorites',
 				method: 'get',
 				func: this.getBasketUser,
 				middlewares: [new AuthGuard()],

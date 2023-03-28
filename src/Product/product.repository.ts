@@ -20,7 +20,7 @@ import {
 	FirstLevelCategory,
 	Favorite,
 } from '@prisma/client';
-import { setBrandsOnCategory, setSecondCategoryOnBrand } from './dto/firstCategory.dto';
+import {firstLevelCategoryDto, setBrandsOnCategory, setSecondCategoryOnBrand} from './dto/firstCategory.dto';
 
 @injectable()
 export class ProductRepository {
@@ -67,7 +67,13 @@ export class ProductRepository {
 			},
 		});
 	}
-
+	async createFirstCategory(firstLevel: firstLevelCategoryDto): Promise<FirstLevelCategory> {
+		return this.prismaService.client.firstLevelCategory.create({
+			data: {
+				...firstLevel,
+			},
+		});
+	}
 	async findBrand(name: string): Promise<Brand | null> {
 		return this.prismaService.client.brand.findFirst({
 			where: {

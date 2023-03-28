@@ -3,7 +3,7 @@ import { TYPES } from '../types';
 import { inject, injectable } from 'inversify';
 import { Ilogger } from '../logger/logger.interface';
 import { BaseController } from '../common/base.controller';
-import { Comment, ModelDeviceDto, ProductCreate, ProductUpdate } from './dto/create-product.dto';
+import {BrandDevice, Comment, ModelDeviceDto, ProductCreate, ProductUpdate} from './dto/create-product.dto';
 import { IProductService } from './product.service.interface';
 import { NextFunction, Request, Response } from 'express';
 import { HTTPError } from '../errors/http-error';
@@ -15,13 +15,14 @@ import { MFile } from '../files/mfile.class';
 import { FileElementResponse } from '../files/dto/fileElement.response';
 import { MulterMiddleware } from '../common/Multer.middleware';
 import multer from 'multer';
-import { setBrandsOnCategory, setSecondCategoryOnBrand } from './dto/firstCategory.dto';
+import {firstLevelCategoryDto, setBrandsOnCategory, setSecondCategoryOnBrand} from './dto/firstCategory.dto';
 import { FileService } from '../files/file.service';
+import {ProductService} from "./product.service";
 @injectable()
 export class ProductController extends BaseController {
 	constructor(
 		@inject(TYPES.ConfigService) private configService: IConfigService,
-		@inject(TYPES.ProductService) private productService: IProductService,
+		@inject(TYPES.ProductService) private productService: ProductService,
 		@inject(TYPES.LoggerService) private loggerService: Ilogger,
 		@inject(TYPES.FileService) private fileService: FileService,
 	) {
@@ -32,6 +33,12 @@ export class ProductController extends BaseController {
 				method: 'post',
 				func: this.create,
 				middlewares: [new AdminGuard(), new ValidateMiddleware(ProductCreate)],
+			},
+			{
+				path: '/createBrand',
+				method: 'post',
+				func: this.createBrand,
+				middlewares: [new AdminGuard()],
 			},
 			{
 				path: '/delete',
@@ -70,6 +77,12 @@ export class ProductController extends BaseController {
 				middlewares: [],
 			},
 			{
+				path: '/createFirstCategory',
+				method: 'post',
+				func: this.createFirstCategory,
+				middlewares: [new AdminGuard()],
+			},
+			{
 				path: '/setCategory',
 				method: 'post',
 				func: this.setCategory,
@@ -106,9 +119,9 @@ export class ProductController extends BaseController {
 				middlewares: [new AdminGuard(), new MulterMiddleware()],
 			},
 			{
-				path: '/setSecondCategoryBrand',
+				path: '/setCategoryOnBrand',
 				method: 'post',
-				func: this.setBrandOnSecondCategory,
+				func: this.setCategoryOnBrand,
 				middlewares: [new AdminGuard()],
 			},
 
@@ -119,7 +132,7 @@ export class ProductController extends BaseController {
 				func: this.setBrandOnSecondCategory,
 				middlewares: [new AdminGuard()],
 			},
-			//создание брендов к категории
+			
 			{
 				path: '/getProductByBrandSecondCategory',
 				method: 'post',
@@ -146,6 +159,28 @@ export class ProductController extends BaseController {
 				middlewares: [],
 			},
 		]);
+	}
+	async createFirstCategory(
+		{ body }: Request<{}, {}, firstLevelCategoryDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		const newProduct = await this.productService.createFirstCategory(body);
+		if (!newProduct) {
+			return next(new HTTPError(401, 'Ошибка создания категории'));
+		}
+		this.ok(res, { ...newProduct });
+	}
+	async createBrand(
+		{ body }: Request<{}, {}, BrandDevice>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		const newProduct = await this.productService.createBrand(body);
+		if (!newProduct) {
+			return next(new HTTPError(401, 'Ошибка создания модел'));
+		}
+		this.ok(res, { ...newProduct });
 	}
 	async findLikeSqlModelBrand(
 		req: Request,
@@ -321,6 +356,18 @@ export class ProductController extends BaseController {
 		this.arr(res, category);
 	}
 	//создание брендов к категории
+	//создание брендов к категории
+	async setCategoryOnBrand(
+		{ body }: Request<{}, {}, setBrandsOnCategory>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void | OutInterface> {
+		const brands = await this.productService.setCategoryOnBrand(body);
+		if (!brands) {
+			return next(new HTTPError(400, 'Ошибка добавление под категории'));
+		}
+		this.arr(res, brands);
+	}
 
 	async getProductByBrandSecondCategory(
 		{ body }: Request<{}, {}, { secondLevelId: string; brandId: string }>,
@@ -355,6 +402,4 @@ export class ProductController extends BaseController {
 		}
 		this.arr(res, category);
 	}
-
-
 }

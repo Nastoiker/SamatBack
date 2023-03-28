@@ -84,9 +84,6 @@ export class ProductCreate {
 	TagId: string;
 	@IsString()
 	@IsOptional()
-	ColorAlias?: string;
-	@IsString()
-	@IsOptional()
 	image?: string;
 	@IsNumber()
 	quantity: number;

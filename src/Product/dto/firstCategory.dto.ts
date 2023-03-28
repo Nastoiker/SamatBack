@@ -18,3 +18,9 @@ export class setBrandsOnCategory {
 	@IsString()
 	categories: string[];
 }
+export class firstLevelCategoryDto {
+	@IsString()
+	name: string;
+	@IsString()
+	alias: string;
+}

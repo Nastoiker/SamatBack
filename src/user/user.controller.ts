@@ -95,7 +95,6 @@ export class UserController extends BaseController implements IUserController {
 		if (!checkDbUser) {
 			return next(new HTTPError(401, 'ошибка авторизации', 'login'));
 		}
-		const userModel = (await this.userService.getUserInfo(body.email)) as UserModel;
 		const jwt = await this.jwtSign(body.email, this.configService.get('SECRET'));
 		this.ok(res, { jwt });
 	}

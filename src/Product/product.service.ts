@@ -23,7 +23,7 @@ import { path } from 'app-root-path';
 import { MFile } from '../files/mfile.class';
 import { FileElementResponse } from '../files/dto/fileElement.response';
 import { mkdir } from 'fs';
-import { setBrandsOnCategory, setSecondCategoryOnBrand } from './dto/firstCategory.dto';
+import {firstLevelCategoryDto, setBrandsOnCategory, setSecondCategoryOnBrand} from './dto/firstCategory.dto';
 @injectable()
 export class ProductService {
 	constructor(@inject(TYPES.ProductRepository) private productRepository: ProductRepository) {}
@@ -76,6 +76,9 @@ export class ProductService {
 	}
 	async getByFirstCategory(firstLevelId: string): Promise<SecondLevelCategory[] | null> {
 		return this.productRepository.getmodelDeviceByCategory(firstLevelId);
+	}
+	async createFirstCategory(firstLevel: firstLevelCategoryDto): Promise<FirstLevelCategory> {
+		return this.productRepository.createFirstCategory(firstLevel);
 	}
 	async setSecondCategory(
 		name: string,
@@ -151,12 +154,17 @@ export class ProductService {
 	async getById(id: string): Promise<ModelDevice | null> {
 		return await this.productRepository.getmodelDeviceById(id);
 	}
-	//создание категории к брендам
 	async getProductByBrandSecondCategory(
 		secondLevelId: string,
 		brandId: string,
 	): Promise<ModelDevice[] | null> {
 		return this.productRepository.getmodelDeviceByBrandSecondCategory(secondLevelId, brandId);
+	}
+	//создание категории к брендам
+	async setBrandOnSecondCategory(
+		setBrandsOnCategory: setSecondCategoryOnBrand,
+	): Promise<SecondLevelCategory> {
+		return this.productRepository.setBrandOnSecondCategory(setBrandsOnCategory);
 	}
 	async getBrandProductByCategory(secondLevelId: string): Promise<Brand[]> {
 		return this.productRepository.getBrandmodelDeviceByCategory(secondLevelId);
