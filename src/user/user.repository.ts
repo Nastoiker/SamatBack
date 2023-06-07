@@ -15,6 +15,7 @@ export class UserRepository implements IUserRepository {
 				isActive: false,
 				email,
 				login,
+				role: 'user',
 				hashpassword,
 			},
 		});
@@ -43,6 +44,18 @@ export class UserRepository implements IUserRepository {
 		return this.prismaService.client.userModel.findFirst({
 			where: {
 				email,
+			},
+			include: {
+				Comment: true,
+				favorite: true,
+				rating: true,
+			},
+		});
+	}
+	async findLogin(login: string): Promise<UserModel | null> {
+		return this.prismaService.client.userModel.findFirst({
+			where: {
+				login,
 			},
 			include: {
 				Comment: true,
@@ -100,5 +113,4 @@ export class UserRepository implements IUserRepository {
 			},
 		});
 	}
-
 }

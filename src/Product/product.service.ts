@@ -5,7 +5,6 @@ import {
 	FirstLevelCategory,
 	Comment,
 	ModelDevice,
-	Tag,
 } from '@prisma/client';
 import {
 	BrandDevice,
@@ -23,7 +22,11 @@ import { path } from 'app-root-path';
 import { MFile } from '../files/mfile.class';
 import { FileElementResponse } from '../files/dto/fileElement.response';
 import { mkdir } from 'fs';
-import {firstLevelCategoryDto, setBrandsOnCategory, setSecondCategoryOnBrand} from './dto/firstCategory.dto';
+import {
+	firstLevelCategoryDto,
+	setBrandsOnCategory,
+	setSecondCategoryOnBrand,
+} from './dto/firstCategory.dto';
 @injectable()
 export class ProductService {
 	constructor(@inject(TYPES.ProductRepository) private productRepository: ProductRepository) {}
@@ -96,7 +99,7 @@ export class ProductService {
 		// @ts-ignore
 		const brandId = product['brand']['name'];
 		// @ts-ignore
-		const modelDeviceId = product['modelDevice']['name'].trim().replace(' ', '-');
+		const modelDeviceId = product['name'].trim().replace(' ', '-');
 		let image = product.image;
 		if (!image) {
 			image = '';
@@ -117,9 +120,7 @@ export class ProductService {
 				}
 			});
 		}
-		if (
-			!pathExistsSync(`./uploads/product/${brandId}/${modelDeviceId}`)
-		) {
+		if (!pathExistsSync(`./uploads/product/${brandId}/${modelDeviceId}`)) {
 			mkdir(`./uploads/product/${brandId}/${modelDeviceId}`, (err) => {
 				if (err) {
 					console.error(err);
@@ -171,8 +172,5 @@ export class ProductService {
 	}
 	async getBrands(): Promise<Brand[]> {
 		return this.productRepository.getBrands();
-	}
-	async getTags(): Promise<Tag[]> {
-		return this.productRepository.getTags();
 	}
 }

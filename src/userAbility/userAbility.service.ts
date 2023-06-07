@@ -101,7 +101,7 @@ export class UserAbilityService {
 			images,
 		);
 	}
-	async addBasket(productId: string, userId: string, quantity: number): Promise<Favorite | null> {
+	async addBasket(productId: string, userId: string): Promise<Favorite | null> {
 		return this.productRepository.addmodelDeviceToFavorite(productId, userId);
 	}
 	async getFavoriteUser(userId: string): Promise<Favorite[] | null> {

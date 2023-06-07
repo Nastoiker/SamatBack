@@ -132,7 +132,6 @@ export class ProductController extends BaseController {
 				func: this.setBrandOnSecondCategory,
 				middlewares: [new AdminGuard()],
 			},
-			
 			{
 				path: '/getProductByBrandSecondCategory',
 				method: 'post',
@@ -206,7 +205,6 @@ export class ProductController extends BaseController {
 		}
 		this.ok(res, { ...newProduct });
 	}
-
 	async uploadImage(
 		request: Request<{}, {}, { productId: string }>,
 		res: Response,
@@ -340,7 +338,7 @@ export class ProductController extends BaseController {
 			return next(new HTTPError(400, 'Ошибка добавление под категории'));
 		}
 		// @ts-ignore
-		category.forEach((c) => delete c.secondLevelCategory);
+		// category.forEach((c) => delete c.secondLevelCategory);
 		this.arr(res, category);
 	}
 	//создание категории к брендам
@@ -355,8 +353,6 @@ export class ProductController extends BaseController {
 		}
 		this.arr(res, category);
 	}
-	//создание брендов к категории
-	//создание брендов к категории
 	async setCategoryOnBrand(
 		{ body }: Request<{}, {}, setBrandsOnCategory>,
 		res: Response,

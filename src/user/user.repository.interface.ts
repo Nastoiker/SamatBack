@@ -3,6 +3,7 @@ import { User } from './user.entity';
 
 export interface IUserRepository {
 	find: (email: string) => Promise<UserModel | null>;
+	findLogin: (email: string) => Promise<UserModel | null>;
 	createUser: (user: User) => Promise<UserModel>;
 	findProfile: (login: string) => Promise<UserModel | null>;
 	getFavoriteByUser: (userId: string) => Promise<Favorite[] | null>;

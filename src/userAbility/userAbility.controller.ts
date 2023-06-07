@@ -99,7 +99,7 @@ export class userAbility extends BaseController {
 	}
 
 	async addProductToBasket(
-		req: Request<{}, {}, { productId: string; quantity: number }>,
+		req: Request<{}, {}, { productId: string; }>,
 		res: Response,
 		next: NextFunction,
 	) {
@@ -110,7 +110,6 @@ export class userAbility extends BaseController {
 		const basket = await this.userAbilityService.addBasket(
 			req.body.productId,
 			writtenById.id,
-			req.body.quantity,
 		);
 		if (!basket) {
 			return next(new HTTPError(422, 'Ошибка добавления товара в корзину'));

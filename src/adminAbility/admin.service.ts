@@ -10,9 +10,6 @@ export class AdminService {
 	async deleteModel(id: string) {
 		return this.adminRepository.deleteModel(id);
 	}
-	async updateTagFromProduct(productId: string, tagId: string) {
-		return this.adminRepository.updateTagFromProduct(productId, tagId);
-	}
 	async deleteComment(commentId: string) {
 		return this.adminRepository.deleteComment(commentId);
 	}

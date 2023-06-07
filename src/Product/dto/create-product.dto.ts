@@ -17,8 +17,6 @@ export class ProductModel {
 	@IsString()
 	@IsOptional()
 	image?: string;
-	@IsNumber()
-	quantity: number;
   @IsString()
 	secondCategoryId: string;
   @IsArray()
@@ -34,8 +32,6 @@ export class Favorite {
 	modelId: string;
 	@IsString()
 	userId: string;
-	@IsNumber()
-	quantity: number;
 }
 export class ProductUpdate {
 	@IsString()
@@ -81,12 +77,8 @@ export class ProductCreate {
 	@IsString()
 	secondCategoryId: string;
 	@IsString()
-	TagId: string;
-	@IsString()
 	@IsOptional()
 	image?: string;
-	@IsNumber()
-	quantity: number;
 	@IsString()
 	Description: string;
 }
@@ -97,9 +89,6 @@ export class ModelCreate {
 	secondCategoryId: string;
 	@IsString()
 	brandId: string;
-
-	@IsNumber()
-	quantity: number;
 	@IsString()
 	modelDeviceId: string;
 	@IsString()
@@ -137,16 +126,8 @@ export class Comment {
 	title: string;
 	file?: MFile[];
 }
-export class Tag {
-	@IsString()
-	tag: String;
-	@IsString()
-	@IsArray()
-	ProductID: string[];
-}
+
 export class BrandModel {
-	@IsString()
-	tag: String;
 	@IsString()
 	@IsArray()
 	modelID: string[];

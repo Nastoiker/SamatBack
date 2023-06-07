@@ -32,12 +32,6 @@ export class AdminController extends BaseController {
 				middlewares: [new AdminGuard()],
 			},
 			{
-				path: '/updateTagProduct',
-				method: 'post',
-				func: this.deleteTagFromProduct,
-				middlewares: [new AdminGuard()],
-			},
-			{
 				path: '/deleteComment',
 				method: 'post',
 				func: this.deleteComment,
@@ -56,20 +50,7 @@ export class AdminController extends BaseController {
 		}
 		this.ok(res, { ...deleteProduct });
 	}
-	async deleteTagFromProduct(
-		{ body }: Request<{}, {}, { productId: string; TagId: string }>,
-		res: Response,
-		next: NextFunction,
-	): Promise<void> {
-		const deleteProduct = await this.adminService.updateTagFromProduct(
-			body.productId,
-			body.TagId,
-		);
-		if (!deleteProduct) {
-			return next(new HTTPError(401, 'Ошибка обновления тега продукта'));
-		}
-		this.ok(res, { ...deleteProduct });
-	}
+
 	async deleteComment(
 		{ body }: Request<{}, {}, { commentId: string }>,
 		res: Response,

@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import { IProductRepository } from '../Product/product.repository.interface';
 import { TYPES } from '../types';
 import { PrismaService } from '../database/prisma.service';
-import { ModelDevice, Tag, Comment } from '@prisma/client';
+import { ModelDevice, Comment } from '@prisma/client';
 
 @injectable()
 export class AdminRepository {
@@ -18,16 +18,6 @@ export class AdminRepository {
 		return this.prismaService.client.comment.delete({
 			where: {
 				id,
-			},
-		});
-	}
-	async updateTagFromProduct(id: string, TagId: string): Promise<Tag> {
-		return this.prismaService.client.modelDevice.update({
-			where: {
-				id,
-			},
-			data: {
-				TagId,
 			},
 		});
 	}

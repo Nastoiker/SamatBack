@@ -20,6 +20,7 @@ model UserModel {
   Comment  Comment[] @relation("CommentWritenBy")
   avatar String?
   isActive Boolean
+  role String
   rating Rating[] @relation("RatingWritenBy")
 }
 model FirstLevelCategory {
@@ -58,15 +59,12 @@ model ModelDevice {
   image String?
   Description         String?
   secondCategoryId String
-  quantity            Int @default(0)
   favorite Favorite[] @relation("FavoriteUser")
   secondCategory SecondLevelCategory @relation("ModelDevice", fields: [secondCategoryId], references: [id], onUpdate: NoAction)
   Comment             Comment[] @relation("CommentProduct")
   brand Brand @relation("BrandByModel", fields: [brandId], references: [id])
   brandId String
-  TagId       String
   rating Rating[] @relation("RatingModel")
-  tag   Tag   @relation("TagModels", fields: [TagId], references: [id], onUpdate: NoAction)
 }
 
 model Comment {
@@ -90,11 +88,7 @@ model Rating {
     modelDevice     ModelDevice   @relation("RatingModel", fields: [modelDeviceId], references: [id], onUpdate: NoAction)
 }
 
-model Tag {
-  id      String       @id @default(uuid())
-  name     String    @unique
-  model   ModelDevice[] @relation("TagModels")
-}
+
 model Brand {
   id      String       @id @default(uuid())
   name    String @unique

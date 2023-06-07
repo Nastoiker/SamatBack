@@ -15,12 +15,15 @@ import {
 import {
 	Brand,
 	ModelDevice,
-	Tag,
 	SecondLevelCategory,
 	FirstLevelCategory,
 	Favorite,
 } from '@prisma/client';
-import {firstLevelCategoryDto, setBrandsOnCategory, setSecondCategoryOnBrand} from './dto/firstCategory.dto';
+import {
+	firstLevelCategoryDto,
+	setBrandsOnCategory,
+	setSecondCategoryOnBrand,
+} from './dto/firstCategory.dto';
 
 @injectable()
 export class ProductRepository {
@@ -183,19 +186,6 @@ export class ProductRepository {
 				brand: true,
 			},
 		});
-	}
-	async findTagByName(name: string): Promise<Tag | null> {
-		return this.prismaService.client.tag.findFirst({
-			where: {
-				name,
-			},
-			include: {
-				model: true,
-			},
-		});
-	}
-	async getTags(): Promise<Tag[]> {
-		return this.prismaService.client.tag.findMany({});
 	}
 	async getAllmodelDevices() {
 		return await this.prismaService.client.modelDevice.findMany({
